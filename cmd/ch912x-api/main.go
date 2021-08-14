@@ -27,6 +27,7 @@ func main() {
 	events := eventsource.New(nil, nil)
 	defer events.Close()
 	mux := http.NewServeMux()
+	mux.Handle("/", http.FileServer(http.Dir("./static")))
 	mux.Handle("/events", events)
 	mux.Handle("/api/", http.StripPrefix("/api", makeAPIService()))
 	go sendDiscoveryEvents(events)
