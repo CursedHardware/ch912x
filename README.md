@@ -4,11 +4,11 @@
 
 ## Supported
 
-| Chip Name | Status |
-| --------- | ------ |
-| CH9120    | TESTED |
-| CH9121    | TESTED |
-| CH9126    | TESTED |
+| Chip Name             | Status |
+| --------------------- | ------ |
+| [CH9120](docs/CH9120) | TESTED |
+| [CH9121](docs/CH9121) | TESTED |
+| [CH9126](docs/CH9126) | TESTED |
 
 ## Command line
 
