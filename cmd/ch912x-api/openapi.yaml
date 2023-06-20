@@ -1,0 +1,203 @@
+openapi: 3.0.3
+info:
+  title: ch912x-api
+  version: v1.0
+  description: The program provides CH912x series chip configuration tools
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit/
+  contact:
+    name: CursedHardware
+    email: ch912x@septs.email
+    url: https://github.com/CursedHardware
+paths:
+  /api/discovery:
+    get:
+      description: Discovery All Devices
+      responses:
+        204:
+          description: Successful
+        500:
+          $ref: "#/components/responses/Error"
+  /api/{product}/{address}:
+    parameters:
+      - $ref: "#/components/parameters/Product"
+      - $ref: "#/components/parameters/Address"
+    get:
+      description: Pull Module
+      responses:
+        200:
+          $ref: "#/components/responses/Module"
+        500:
+          $ref: "#/components/responses/Error"
+    post:
+      description: Push Module
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Module"
+      responses:
+        200:
+          $ref: "#/components/responses/Module"
+        500:
+          $ref: "#/components/responses/Error"
+    delete:
+      description: Reset Module
+      responses:
+        200:
+          $ref: "#/components/responses/Module"
+        500:
+          $ref: "#/components/responses/Error"
+components:
+  parameters:
+    Product:
+      description: Product Name
+      name: product
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [ch9120, ch9121, ch9126]
+    Address:
+      description: MAC Address (Base64 Encoded)
+      name: address
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    Module:
+      description: Module Information
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Module"
+    Error:
+      description: Internal Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
+            required: [message]
+            additionalProperties: false
+  schemas:
+    Module:
+      type: object
+      properties:
+        version:
+          type: string
+        module_name:
+          type: string
+        module_mac:
+          type: string
+        client_mac:
+          type: string
+        module_options:
+          $ref: "#/components/schemas/ModuleOptions"
+        uart1:
+          $ref: "#/components/schemas/UARTOptions"
+        uart2:
+          $ref: "#/components/schemas/UARTOptions"
+        ntp:
+          $ref: "#/components/schemas/NTPOptions"
+      additionalProperties: false
+    ModuleOptions:
+      type: object
+      properties:
+        mac:
+          type: string
+        ip:
+          type: string
+        mask:
+          type: string
+        gateway:
+          type: string
+        use_dhcp:
+          type: boolean
+        serial_negotiate:
+          type: boolean
+        enabled_minor_uart:
+          type: boolean
+      additionalProperties: false
+    UARTOptions:
+      type: object
+      properties:
+        mode:
+          type: integer
+          description: |
+            * 0 - TCP Server
+            * 1 - TCP Client
+            * 2 - UDP Server
+            * 3 - UDP Client
+          enum: [0, 1, 2, 3]
+        client_ip:
+          type: string
+        client_port:
+          type: integer
+        client_domain:
+          type: string
+        use_domain:
+          type: boolean
+        local_port:
+          type: integer
+        packet_size:
+          type: integer
+        packet_timeout:
+          type: integer
+        random_client_port:
+          type: boolean
+        close_on_lost:
+          type: boolean
+        clear_on_reconnect:
+          type: boolean
+        baud:
+          type: integer
+        data_bits:
+          type: integer
+        stop_bit:
+          type: integer
+        parity:
+          type: integer
+          description: |
+            * 0 - None
+            * 1 - Even
+            * 2 - Odd
+            * 3 - Mark
+            * 4 - Space
+          enum: [0, 1, 2, 3, 4]
+      additionalProperties: false
+    NTPOptions:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        mode:
+          type: integer
+          description: |
+            * 0 - NTP Server
+            * 1 - NTP Client
+          enum: [0, 1]
+        client_ip:
+          type: string
+        polling:
+          type: integer
+        pulse_output:
+          type: boolean
+        keep_alive:
+          type: boolean
+      additionalProperties: false
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+      required: [message]
+      additionalProperties: false
